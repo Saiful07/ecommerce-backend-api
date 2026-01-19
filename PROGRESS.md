@@ -55,17 +55,35 @@
 
 ---
 
-### Day 3 - [Date]
+### Day 3 - [20 Jan 2026]
 **Tasks Completed:**
-- [ ] Product CRUD endpoints
-- [ ] Category management APIs
-- [ ] Product listing with pagination
-- [ ] Search and filtering
-- [ ] API documentation
+- [x] Created product serializers (list, detail, create/update)
+- [x] Created category serializers with nested children
+- [x] Implemented CategoryViewSet with admin-only mutations
+- [x] Implemented ProductViewSet with full CRUD
+- [x] Added search functionality (name, description)
+- [x] Added filtering (category, price range, stock availability)
+- [x] Added pagination (50 items per page)
+- [x] Added ordering (price, created_at, name)
+- [x] Implemented permission classes (public read, admin write)
+- [x] Created admin panel configuration
+- [x] Tested category creation - SUCCESS
+- [x] Tested product creation - SUCCESS
+- [x] Tested product listing - SUCCESS
+- [x] Tested search functionality - SUCCESS
+- [x] Tested category filtering - SUCCESS
 
-**Commits:** 
-**Endpoints Built:** 
-**Blockers:** 
+**Commits:** 1
+**Endpoints Built:** 12 (Category: list/create/update/delete/all, Product: list/create/retrieve/update/delete/featured/low_stock, Search)
+**Endpoints Tested:** 5/12
+**Blockers:** None
+
+**Key Learnings:**
+- ViewSet routing with DefaultRouter
+- Query parameter filtering in DRF
+- select_related() for optimizing foreign key queries
+- Different serializers for list vs detail views
+- Permission classes for public/private endpoints 
 
 ---
 
@@ -122,10 +140,11 @@
 ---
 
 ## Metrics Tracker
-- Total Endpoints: 6/40+ ✓
+- Total Endpoints: 18/40+ ✓
 - Test Coverage: 0%
-- Total Commits: 7
+- Total Commits: 9
 - Bugs Fixed: 0
 - Models Created: 9/9 ✓
 - Apps Created: 5/5 ✓
 - Authentication: COMPLETE ✓
+- Product Catalog: COMPLETE ✓
