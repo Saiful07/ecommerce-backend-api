@@ -32,16 +32,26 @@
 
 ### Day 2 - [20 Jan 2026]
 **Tasks Completed:**
-- [ ] JWT authentication implementation
-- [ ] User registration endpoint
-- [ ] Login/logout endpoints
-- [ ] Password reset flow
-- [ ] Profile management API
-- [ ] Auth endpoint testing with Postman
+- [x] Installed djangorestframework-simplejwt
+- [x] Configured JWT authentication in settings
+- [x] Created user serializers (registration, profile, password change)
+- [x] Implemented authentication views (register, login, profile, logout, password change)
+- [x] Set up URL routing for auth endpoints
+- [x] Configured token blacklist for secure logout
+- [x] Tested registration endpoint - SUCCESS
+- [x] Tested login endpoint - SUCCESS
+- [x] Tested protected profile endpoint with JWT - SUCCESS
 
-**Commits:** 
-**Endpoints Built:** 
-**Blockers:** 
+**Commits:** 2
+**Endpoints Built:** 6 (register, login, logout, token refresh, profile GET/PATCH, change password)
+**Endpoints Tested:** 3/6
+**Blockers:** None
+
+**Key Learnings:**
+- JWT access/refresh token flow
+- Token blacklisting for logout
+- Protected routes with Bearer authentication
+- Password validation with Django validators
 
 ---
 
