@@ -124,23 +124,55 @@
 
 ---
 
-### Day 5 - [Date]
+### Day 5 - [20 Jan 2026]
 **Tasks Completed:**
-- [ ] 
+- [x] Created order serializers (order, order item, create order, list)
+- [x] Implemented OrderViewSet with custom actions
+- [x] Create order from cart endpoint
+- [x] Atomic transaction for order creation
+- [x] Stock validation before order creation
+- [x] Automatic stock deduction on order
+- [x] Price snapshot in OrderItem model
+- [x] Cart cleared after order creation
+- [x] Order list endpoint with user filtering
+- [x] Order detail endpoint
+- [x] Tested order creation - SUCCESS
+- [x] Tested order listing - SUCCESS
+- [x] Tested order detail - SUCCESS
 
-**Commits:** 
-**Endpoints Built:** 
-**Blockers:** 
+**Commits:** 1
+**Endpoints Built:** 3 (create order, list orders, order detail)
+**Endpoints Tested:** 3/3
+**Blockers:** None
+
+**Key Learnings:**
+- Atomic transactions for multi-step operations
+- select_for_update() for row-level locking
+- Price snapshot pattern prevents price change issues
+- Stock deduction must be atomic with order creation
 
 ---
 
-### Day 6 - [Date]
+### Day 6 - [20 Jan 2026]
 **Tasks Completed:**
-- [ ] 
+- [x] Order cancellation endpoint
+- [x] Stock restoration on cancellation
+- [x] Status validation for cancellation
+- [x] Admin-only order status update endpoint
+- [x] Order admin panel configuration
+- [x] Inline order items in admin
+- [x] Tested order cancellation - SUCCESS
+- [x] Tested stock restoration - SUCCESS
 
-**Commits:** 
-**Endpoints Built:** 
-**Blockers:** 
+**Commits:** 1
+**Endpoints Built:** 2 (cancel order, update status)
+**Endpoints Tested:** 2/2
+**Blockers:** None
+
+**Key Learnings:**
+- Reversible operations (cancel = restore stock)
+- Permission-based endpoints (admin-only status updates)
+- Business logic enforcement (only pending orders can be cancelled)
 
 ---
 
@@ -167,12 +199,13 @@
 ---
 
 ## Metrics Tracker
-- Total Endpoints: 23/40+ ✓
+- Total Endpoints: 28/40+ ✓
 - Test Coverage: 0%
-- Total Commits: 12
+- Total Commits: 14
 - Bugs Fixed: 0
 - Models Created: 9/9 ✓
 - Apps Created: 5/5 ✓
 - Authentication: COMPLETE ✓
 - Product Catalog: COMPLETE ✓
 - Shopping Cart: COMPLETE ✓
+- Order Management: COMPLETE ✓
