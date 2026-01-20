@@ -87,13 +87,35 @@
 
 ---
 
-### Day 4 - [Date]
+### Day 4 - [20 Jan 2026]
 **Tasks Completed:**
-- [ ] 
+- [x] Created cart serializers (cart, cart item, add/update)
+- [x] Implemented cart ViewSet with custom actions
+- [x] Anonymous cart support using session keys
+- [x] Authenticated user cart support
+- [x] Add item to cart with stock validation
+- [x] Update cart item quantity
+- [x] Remove item from cart
+- [x] Clear entire cart
+- [x] Cart total calculation (items + amount)
+- [x] Prevent adding out-of-stock items
+- [x] Prevent quantity exceeding available stock
+- [x] Tested view empty cart - SUCCESS
+- [x] Tested add item - SUCCESS
+- [x] Tested update quantity - SUCCESS
+- [x] Tested remove item - SUCCESS
 
-**Commits:** 
-**Endpoints Built:** 
-**Blockers:** 
+**Commits:** 1
+**Endpoints Built:** 5 (view cart, add item, update item, remove item, clear cart)
+**Endpoints Tested:** 5/5
+**Blockers:** None
+
+**Key Learnings:**
+- Session-based cart for anonymous users
+- get_or_create pattern for cart retrieval
+- Stock validation before cart operations
+- Atomic transactions for cart updates
+- Custom ViewSet actions with URL routing
 
 ---
 
@@ -140,11 +162,12 @@
 ---
 
 ## Metrics Tracker
-- Total Endpoints: 18/40+ ✓
+- Total Endpoints: 23/40+ ✓
 - Test Coverage: 0%
-- Total Commits: 9
+- Total Commits: 10
 - Bugs Fixed: 0
 - Models Created: 9/9 ✓
 - Apps Created: 5/5 ✓
 - Authentication: COMPLETE ✓
 - Product Catalog: COMPLETE ✓
+- Shopping Cart: COMPLETE ✓
