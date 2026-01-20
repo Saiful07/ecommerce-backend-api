@@ -100,12 +100,16 @@
 - [x] Cart total calculation (items + amount)
 - [x] Prevent adding out-of-stock items
 - [x] Prevent quantity exceeding available stock
+- [x] Cart migration on login - anonymous to user
+- [x] Cart migration on registration
+- [x] Atomic transactions for cart merge
 - [x] Tested view empty cart - SUCCESS
 - [x] Tested add item - SUCCESS
 - [x] Tested update quantity - SUCCESS
 - [x] Tested remove item - SUCCESS
+- [x] Tested cart migration on login - SUCCESS
 
-**Commits:** 1
+**Commits:** 2
 **Endpoints Built:** 5 (view cart, add item, update item, remove item, clear cart)
 **Endpoints Tested:** 5/5
 **Blockers:** None
@@ -114,8 +118,9 @@
 - Session-based cart for anonymous users
 - get_or_create pattern for cart retrieval
 - Stock validation before cart operations
-- Atomic transactions for cart updates
+- Atomic transactions for cart updates and merges
 - Custom ViewSet actions with URL routing
+- Cart migration pattern on authentication events
 
 ---
 
@@ -164,7 +169,7 @@
 ## Metrics Tracker
 - Total Endpoints: 23/40+ ✓
 - Test Coverage: 0%
-- Total Commits: 10
+- Total Commits: 12
 - Bugs Fixed: 0
 - Models Created: 9/9 ✓
 - Apps Created: 5/5 ✓
