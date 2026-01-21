@@ -153,3 +153,7 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# Razorpay settings
+RAZORPAY_KEY_ID = 'rzp_test_S6Ul52CmgiCKNG'
+RAZORPAY_KEY_SECRET = 'OsPe5r7PN4hCGkzx3rXdqC0e'
