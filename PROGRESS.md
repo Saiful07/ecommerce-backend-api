@@ -176,17 +176,31 @@
 
 ---
 
-### Day 7 - [Date]
+### Day 7 - [21 Jan 2026]
 **Tasks Completed:**
-- [ ] 
+- [x] Created payment serializers (initiate, verify, payment detail)
+- [x] Implemented PaymentViewSet with Razorpay client
+- [x] Payment initiation endpoint with Razorpay order creation
+- [x] Payment verification with signature validation
+- [x] Webhook handler for async payment updates
+- [x] Payment status tracking (initiated, success, failed)
+- [x] Order status update on payment success
+- [x] Razorpay test account setup
+- [x] Test keys integration
+- [x] Tested payment initiation - SUCCESS
+- [x] Razorpay order created successfully
 
-**Commits:** 
-**Endpoints Built:** 
-**Blockers:** 
+**Commits:** 2
+**Endpoints Built:** 3 (initiate payment, verify payment, webhook)
+**Endpoints Tested:** 1/3
+**Blockers:** None
 
----
-
-## Week 2: Cart & Order Creation (Days 8-14)
+**Key Learnings:**
+- Razorpay SDK integration
+- Payment signature verification with HMAC
+- Webhook security with signature validation
+- Atomic payment and order status updates
+- Amount conversion (rupees to paise)
 
 ### Day 8 - [Date]
 **Tasks Completed:**
@@ -199,9 +213,9 @@
 ---
 
 ## Metrics Tracker
-- Total Endpoints: 28/40+ ✓
+- Total Endpoints: 31/40+ ✓
 - Test Coverage: 0%
-- Total Commits: 14
+- Total Commits: 16
 - Bugs Fixed: 0
 - Models Created: 9/9 ✓
 - Apps Created: 5/5 ✓
@@ -209,3 +223,4 @@
 - Product Catalog: COMPLETE ✓
 - Shopping Cart: COMPLETE ✓
 - Order Management: COMPLETE ✓
+- Payment Integration: COMPLETE ✓
