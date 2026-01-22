@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.db import transaction
+from django.db.models import Sum, Count
 from django.shortcuts import get_object_or_404
 from .models import Order, OrderItem
 from .serializers import OrderSerializer, CreateOrderSerializer, OrderListSerializer
@@ -30,7 +31,6 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = CreateOrderSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
         
-        # Get user's cart
         try:
             cart = Cart.objects.get(user=request.user)
         except Cart.DoesNotExist:
@@ -45,7 +45,6 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Get shipping address
         shipping_address_id = serializer.validated_data.get('shipping_address_id')
         shipping_address_text = serializer.validated_data.get('shipping_address')
         
@@ -55,17 +54,14 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             shipping_address = shipping_address_text
         
-        # Create order with atomic transaction
         try:
             with transaction.atomic():
-                # Calculate total and validate stock
                 total_amount = 0
                 cart_items = cart.items.select_related('product').select_for_update()
                 
                 for cart_item in cart_items:
                     product = cart_item.product
                     
-                    # Check stock availability
                     if product.stock < cart_item.quantity:
                         raise ValueError(
                             f"Insufficient stock for {product.name}. Available: {product.stock}, Requested: {cart_item.quantity}"
@@ -73,7 +69,6 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                     
                     total_amount += product.price * cart_item.quantity
                 
-                # Create order
                 order = Order.objects.create(
                     user=request.user,
                     total_amount=total_amount,
@@ -82,7 +77,6 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                     payment_status='pending'
                 )
                 
-                # Create order items and deduct stock
                 for cart_item in cart_items:
                     product = cart_item.product
                     
@@ -93,11 +87,9 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
                         price_at_purchase=product.price
                     )
                     
-                    # Deduct stock
                     product.stock -= cart_item.quantity
                     product.save()
                 
-                # Clear cart
                 cart.items.all().delete()
                 
                 order_serializer = OrderSerializer(order)
@@ -126,13 +118,11 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
             )
         
         with transaction.atomic():
-            # Restore stock
             for order_item in order.items.select_for_update():
                 product = order_item.product
                 product.stock += order_item.quantity
                 product.save()
             
-            # Update order status
             order.status = 'cancelled'
             order.save()
         
@@ -163,3 +153,31 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
         
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAdminUser])
+    def sales_report(self, request):
+        """Sales report with date filtering"""
+        from django.utils import timezone
+        from datetime import timedelta
+        
+        days = int(request.query_params.get('days', 30))
+        start_date = timezone.now() - timedelta(days=days)
+        
+        orders = Order.objects.filter(
+            created_at__gte=start_date,
+            payment_status='success'
+        )
+        
+        daily_sales = orders.extra(
+            select={'day': 'date(created_at)'}
+        ).values('day').annotate(
+            total=Sum('total_amount'),
+            count=Count('id')
+        ).order_by('day')
+        
+        return Response({
+            'period_days': days,
+            'total_orders': orders.count(),
+            'total_revenue': orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0,
+            'daily_breakdown': list(daily_sales)
+        })
