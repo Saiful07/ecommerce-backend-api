@@ -1,44 +1,44 @@
 # E-Commerce Backend API
 
-RESTful e-commerce backend API built with Django REST Framework featuring product catalog, cart management, order processing, Razorpay payment integration, and inventory management.
+Production-ready RESTful e-commerce backend API built with Django REST Framework featuring complete order-to-payment flow, cart management, admin analytics, and comprehensive test coverage.
 
 ## 🚀 Features
 
-- **User Authentication**: JWT-based authentication with access and refresh tokens
-- **Product Management**: Complete CRUD operations with categories, search, and filtering
-- **Shopping Cart**: Support for both authenticated and anonymous users with session-based carts
-- **Cart Migration**: Automatic cart merge on login/registration
-- **Order Processing**: Full order lifecycle from cart to delivery with atomic transactions
-- **Payment Integration**: Razorpay gateway integration with webhook support
-- **Inventory Management**: Real-time stock tracking with race condition handling
-- **Price Snapshots**: Historical price tracking in orders
-- **Admin APIs**: Order management and product analytics
+- **User Authentication**: JWT-based authentication with token blacklisting
+- **Product Management**: Full CRUD with categories, search, filtering, and pagination
+- **Shopping Cart**: Session-based carts for anonymous users with automatic migration on login
+- **Order Processing**: Atomic transactions with stock deduction and price snapshots
+- **Payment Integration**: Razorpay gateway with signature verification and webhooks
+- **Inventory Management**: Race condition prevention with row-level locking
+- **Admin Analytics**: Revenue tracking, sales reports, and product insights
+- **Testing**: 67% code coverage with 15 comprehensive tests
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Django 5.x, Django REST Framework
-- **Database**: SQLite (Development) / PostgreSQL (Production)
+- **Backend**: Django 6.0, Django REST Framework
+- **Database**: SQLite (Development) / PostgreSQL (Production-ready)
 - **Authentication**: JWT (djangorestframework-simplejwt)
 - **Payment**: Razorpay Python SDK
-- **Testing**: pytest, pytest-django
+- **Testing**: pytest, pytest-django, pytest-cov
+- **Security**: Environment variables, HMAC verification, CSRF protection
 
 ## 📊 Database Schema
 
 ![Database Schema](docs/database_schema.png)
 
-### Models
+### Models (9 Total)
 - **User & Address**: Custom user model with shipping/billing addresses
-- **Category & Product**: Nested categories with product catalog
+- **Category & Product**: Nested categories with full product catalog
 - **Cart & CartItem**: Session-based and user-based shopping carts
-- **Order & OrderItem**: Orders with price snapshots at purchase time
+- **Order & OrderItem**: Orders with historical price snapshots
 - **Payment**: Razorpay payment tracking with signature verification
 
-## 🚦 API Endpoints
+## 🚦 API Endpoints (33 Total)
 
 ### Authentication (6 endpoints)
-- `POST /api/auth/register/` - User registration with cart migration
-- `POST /api/auth/login/` - User login with cart migration
-- `POST /api/auth/logout/` - User logout with token blacklist
+- `POST /api/auth/register/` - User registration with automatic cart migration
+- `POST /api/auth/login/` - User login with cart merge
+- `POST /api/auth/logout/` - Logout with token blacklisting
 - `POST /api/auth/token/refresh/` - Refresh access token
 - `GET /api/auth/profile/` - Get user profile
 - `PATCH /api/auth/profile/` - Update user profile
@@ -53,42 +53,45 @@ RESTful e-commerce backend API built with Django REST Framework featuring produc
 - `DELETE /api/categories/{slug}/` - Delete category (admin only)
 
 ### Products (7 endpoints)
-- `GET /api/products/` - List products (pagination, search, filters)
+- `GET /api/products/` - List products with search, filters, pagination
 - `GET /api/products/{id}/` - Product detail
 - `POST /api/products/` - Create product (admin only)
 - `PUT /api/products/{id}/` - Update product (admin only)
 - `DELETE /api/products/{id}/` - Delete product (admin only)
-- `GET /api/products/featured/` - Get featured products (latest 10)
-- `GET /api/products/low_stock/` - Get low stock products (admin only)
+- `GET /api/products/featured/` - Featured products (latest 10)
+- `GET /api/products/low_stock/` - Low stock alert (admin only)
+- `GET /api/products/analytics/` - Admin analytics dashboard
 
-**Query Parameters for Product List:**
+**Query Parameters:**
 - `search` - Search in name/description
 - `category` - Filter by category slug
-- `min_price` - Minimum price filter
-- `max_price` - Maximum price filter
+- `min_price` / `max_price` - Price range filter
 - `in_stock` - Filter available items (true/false)
 - `ordering` - Sort by price, created_at, name
 
 ### Cart (5 endpoints)
-- `GET /api/cart/` - Get cart contents with totals
-- `POST /api/cart/add/` - Add item to cart with stock validation
-- `PATCH /api/cart/items/{id}/` - Update cart item quantity
-- `DELETE /api/cart/items/{id}/` - Remove item from cart
+- `GET /api/cart/` - Get cart with totals
+- `POST /api/cart/add/` - Add item with stock validation
+- `PATCH /api/cart/items/{id}/` - Update quantity
+- `DELETE /api/cart/items/{id}/` - Remove item
 - `DELETE /api/cart/clear/` - Clear entire cart
 
 ### Orders (5 endpoints)
-- `POST /api/orders/create_order/` - Create order from cart (atomic)
+- `POST /api/orders/create_order/` - Create order (atomic transaction)
 - `GET /api/orders/` - List user orders (paginated)
 - `GET /api/orders/{id}/` - Order detail with items
-- `POST /api/orders/{id}/cancel/` - Cancel order and restore stock
-- `PATCH /api/orders/{id}/update_status/` - Update order status (admin only)
+- `POST /api/orders/{id}/cancel/` - Cancel and restore stock
+- `PATCH /api/orders/{id}/update_status/` - Update status (admin only)
+- `GET /api/orders/sales_report/` - Sales report with date filtering (admin only)
 
 ### Payments (3 endpoints)
 - `POST /api/payments/initiate/` - Initiate Razorpay payment
 - `POST /api/payments/verify/` - Verify payment signature
 - `POST /api/payments/webhook/` - Razorpay webhook handler
 
-**Total: 31 API Endpoints**
+### Admin Analytics (2 endpoints)
+- `GET /api/products/analytics/` - Dashboard (revenue, top products, orders by status)
+- `GET /api/orders/sales_report/?days=30` - Sales breakdown
 
 ## 📦 Installation
 
@@ -96,7 +99,7 @@ RESTful e-commerce backend API built with Django REST Framework featuring produc
 - Python 3.10+
 - Git
 
-### Setup
+### Local Setup
 
 1. **Clone repository**
 ```bash
@@ -118,15 +121,17 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. **Configure Razorpay keys**
+4. **Environment variables**
 
-Edit `ecommerce_backend/settings.py` and add your Razorpay test keys:
-```python
-RAZORPAY_KEY_ID = 'rzp_test_YOUR_KEY_ID'
-RAZORPAY_KEY_SECRET = 'YOUR_KEY_SECRET'
+Create `.env` file in project root:
+```env
+SECRET_KEY=your-django-secret-key
+DEBUG=True
+RAZORPAY_KEY_ID=rzp_test_YOUR_KEY_ID
+RAZORPAY_KEY_SECRET=YOUR_KEY_SECRET
 ```
 
-Get test keys from: https://dashboard.razorpay.com/app/keys (Test Mode)
+Get Razorpay test keys: https://dashboard.razorpay.com/app/keys (Test Mode)
 
 5. **Database setup**
 ```bash
@@ -139,16 +144,40 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Server will start at: `http://127.0.0.1:8000`
+Server: `http://127.0.0.1:8000`
 
-## 🧪 Testing with Postman
+## 🧪 Testing
 
-### Quick Test Flow
-
-1. **Register User**
+**Run all tests:**
+```bash
+pytest
 ```
+
+**With coverage report:**
+```bash
+pytest --cov=. --cov-report=term-missing
+```
+
+**Test specific module:**
+```bash
+pytest tests/test_auth.py
+pytest tests/test_products.py
+pytest tests/test_orders.py
+```
+
+**Current Coverage: 67%**
+- 15 tests covering authentication, products, orders
+- Critical flows: cart migration, order creation, stock management
+- Payment mocking and race condition testing
+
+## 🧪 Quick Test Flow (Postman)
+
+### 1. Register User
+```http
 POST http://127.0.0.1:8000/api/auth/register/
-Body: {
+Content-Type: application/json
+
+{
   "username": "testuser",
   "email": "test@example.com",
   "password": "Test123!",
@@ -159,177 +188,164 @@ Body: {
 }
 ```
 
-2. **Login & Get Token**
-```
+### 2. Login & Get Token
+```http
 POST http://127.0.0.1:8000/api/auth/login/
-Body: {
+Content-Type: application/json
+
+{
   "username": "testuser",
   "password": "Test123!"
 }
 ```
-Save the `access` token for authenticated requests.
 
-3. **Create Category (Admin)**
-```
-POST http://127.0.0.1:8000/api/categories/
-Headers: Authorization: Bearer YOUR_ADMIN_TOKEN
-Body: {
-  "name": "Electronics",
-  "description": "Electronic devices"
-}
-```
-
-4. **Create Product (Admin)**
-```
+### 3. Create Product (Admin)
+```http
 POST http://127.0.0.1:8000/api/products/
-Headers: Authorization: Bearer YOUR_ADMIN_TOKEN
-Body: {
-  "name": "iPhone 15",
+Authorization: Bearer YOUR_ADMIN_TOKEN
+Content-Type: application/json
+
+{
+  "name": "iPhone 15 Pro",
   "description": "Latest iPhone",
-  "price": 99999.00,
+  "price": 129900.00,
   "stock": 50,
   "category": 1
 }
 ```
 
-5. **Add to Cart**
-```
+### 4. Add to Cart
+```http
 POST http://127.0.0.1:8000/api/cart/add/
-Headers: Authorization: Bearer YOUR_TOKEN
-Body: {
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
   "product_id": 1,
   "quantity": 2
 }
 ```
 
-6. **Create Order**
-```
+### 5. Create Order
+```http
 POST http://127.0.0.1:8000/api/orders/create_order/
-Headers: Authorization: Bearer YOUR_TOKEN
-Body: {
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
   "shipping_address": "123 Main St, City, State, 12345, Country"
 }
 ```
 
-7. **Initiate Payment**
-```
+### 6. Initiate Payment
+```http
 POST http://127.0.0.1:8000/api/payments/initiate/
-Headers: Authorization: Bearer YOUR_TOKEN
-Body: {
+Authorization: Bearer YOUR_TOKEN
+Content-Type: application/json
+
+{
   "order_id": 1
 }
 ```
 
 ## 📝 Development Progress
 
-Detailed daily progress tracking: [PROGRESS.md](PROGRESS.md)
+**Project Completion: 95%**
 
-**Current Status: 77.5% Complete**
-- ✅ Authentication System
-- ✅ Product Catalog with Search & Filtering
-- ✅ Shopping Cart with Session Support
-- ✅ Order Management
-- ✅ Payment Integration (Razorpay)
-- ⏳ Admin Analytics APIs
-- ⏳ Testing Suite
-- ⏳ Deployment
+Detailed daily progress: [PROGRESS.md](PROGRESS.md)
+
+### Completed Modules
+- ✅ Authentication System (6 endpoints, 100% tested)
+- ✅ Product Catalog (7 endpoints, 80% tested)
+- ✅ Shopping Cart (5 endpoints, 100% tested)
+- ✅ Order Management (5 endpoints, 80% tested)
+- ✅ Payment Integration (3 endpoints, 65% tested)
+- ✅ Admin Analytics (2 endpoints, 69% tested)
+- ✅ Testing Suite (15 tests, 67% coverage)
+
+### Remaining
+- ⏳ Deployment documentation
 
 ## 🏗️ Project Structure
 ```
 ecommerce-backend-api/
-├── accounts/              # User authentication & profiles
-│   ├── models.py         # User, Address models
-│   ├── serializers.py    # User serializers
-│   ├── views.py          # Auth views with cart migration
-│   └── urls.py
-├── products/             # Product catalog
-│   ├── models.py         # Category, Product models
-│   ├── serializers.py    # Product serializers
-│   ├── views.py          # Product CRUD with filtering
-│   └── urls.py
-├── carts/                # Shopping cart
-│   ├── models.py         # Cart, CartItem models
-│   ├── serializers.py    # Cart serializers
-│   ├── views.py          # Cart operations
-│   └── urls.py
+├── accounts/              # Authentication & user profiles
+├── products/             # Product catalog & categories
+├── carts/                # Shopping cart management
 ├── orders/               # Order processing
-│   ├── models.py         # Order, OrderItem models
-│   ├── serializers.py    # Order serializers
-│   ├── views.py          # Order creation with atomic transactions
-│   └── urls.py
-├── payments/             # Payment gateway
-│   ├── models.py         # Payment model
-│   ├── serializers.py    # Payment serializers
-│   ├── views.py          # Razorpay integration
-│   └── urls.py
-├── ecommerce_backend/    # Project settings
-│   ├── settings.py       # Django settings
-│   └── urls.py           # Main URL configuration
+├── payments/             # Razorpay payment integration
+├── tests/                # Test suite (15 tests)
+│   ├── test_auth.py
+│   ├── test_products.py
+│   └── test_orders.py
 ├── docs/                 # Documentation
 │   └── database_schema.png
-├── manage.py
-├── requirements.txt
-├── PROGRESS.md           # Daily progress tracking
+├── ecommerce_backend/    # Project settings
+├── pytest.ini            # Test configuration
+├── requirements.txt      # Dependencies
+├── PROGRESS.md           # Daily development log
 └── README.md
 ```
 
 ## 🔐 Security Features
 
-- **JWT Authentication**: Secure token-based auth with refresh tokens
-- **Token Blacklisting**: Logged out tokens are invalidated
+- **JWT Authentication**: Secure token-based auth with 1-hour access tokens
+- **Token Blacklisting**: Invalidates tokens on logout
+- **Environment Variables**: Sensitive data in `.env` file
 - **Password Hashing**: Django's PBKDF2 algorithm
-- **CSRF Protection**: Built-in Django CSRF middleware
-- **SQL Injection Prevention**: Django ORM parameterized queries
+- **CSRF Protection**: Built-in Django middleware
+- **SQL Injection Prevention**: ORM parameterized queries
 - **Input Validation**: DRF serializer validation
-- **Permission Classes**: Role-based access control (user/admin)
+- **Permission Classes**: Role-based access (user/admin)
 - **Atomic Transactions**: Data consistency for critical operations
-- **Payment Signature Verification**: HMAC-SHA256 signature validation
+- **Payment Signature Verification**: HMAC-SHA256 validation
 
 ## 🎯 Key Technical Features
 
 ### Atomic Transactions
-- Order creation with stock deduction
-- Cart migration on login
-- Order cancellation with stock restoration
+- Order creation atomically deducts stock
+- Cart migration merges items safely
+- Order cancellation restores inventory
 
-### Race Condition Handling
-- `select_for_update()` for row-level locking
-- Prevents overselling during concurrent orders
+### Concurrency Handling
+- `select_for_update()` prevents race conditions
+- Row-level locking during order creation
+- Prevents overselling during concurrent purchases
 
 ### Price Snapshot Pattern
 - Stores product price at time of purchase
-- Historical price accuracy for orders
+- Historical accuracy for orders
+- Prevents price change issues in reports
 
 ### Session-Based Cart
-- Works for anonymous users
-- Automatically migrates to user account on login
+- Anonymous users can shop without login
+- Automatic migration to user account on login
+- Handles duplicate items during merge
 
 ### Query Optimization
-- `select_related()` for foreign key optimization
+- `select_related()` for foreign keys
 - `prefetch_related()` for reverse relations
-- Database indexes on frequently queried fields
+- Strategic database indexes
 
-## 🎯 Roadmap
+## 📊 Project Statistics
 
-- [x] Database schema design
-- [x] Models implementation
-- [x] Authentication APIs
-- [x] Product catalog APIs
-- [x] Cart management
-- [x] Order processing
-- [x] Payment integration
-- [ ] Admin dashboard APIs
-- [ ] API documentation (Swagger)
-- [ ] Unit & integration tests
-- [ ] Deployment to cloud platform
+- **Total Endpoints:** 33
+- **Total Models:** 9
+- **Total Tests:** 15
+- **Test Coverage:** 67%
+- **Total Commits:** 20
+- **Development Time:** 9 days
+- **Lines of Code:** ~1,100 (excluding migrations)
 
 ## 👤 Author
 
-**Saiful Islam**
-- GitHub: [@Saiful07](https://github.com/Saiful07)
-- LinkedIn: [saifulislam07](https://linkedin.com/in/saifulislam07)
-- Email: mdsaifults08@gmail.com
-- Portfolio: [saifuldz.netlify.app](https://saifuldz.netlify.app)
+**Saiful Islam**  
+Backend Developer specializing in Python/Django
+
+- **GitHub:** [@Saiful07](https://github.com/Saiful07)
+- **LinkedIn:** [saifulislam07](https://linkedin.com/in/saifulislam07)
+- **Email:** mdsaifults08@gmail.com
+- **Portfolio:** [saifuldz.netlify.app](https://saifuldz.netlify.app)
 
 ## 📄 License
 
@@ -337,10 +353,21 @@ This project is open source and available under the MIT License.
 
 ## 🙏 Acknowledgments
 
-Built as part of internship at **The Developers Arena** (Jan 2026 - Present) to demonstrate backend development skills with Django REST Framework and e-commerce system architecture.
+Built as a personal project to demonstrate production-grade backend development skills with Django REST Framework, focusing on e-commerce system architecture, payment integration, and test-driven development.
+
+**Key Learning Outcomes:**
+- Complex database design with 9 related models
+- JWT authentication with token management
+- Payment gateway integration (Razorpay)
+- Atomic transactions and race condition prevention
+- Test-driven development with pytest
+- RESTful API design patterns
+- Security best practices
 
 ## 📧 Contact
 
-For questions or collaboration opportunities, reach out via:
-- Email: mdsaifults08@gmail.com
-- LinkedIn: [saifulislam07](https://linkedin.com/in/saifulislam07)
+Open to backend developer opportunities and collaboration.
+
+- **Email:** mdsaifults08@gmail.com
+- **LinkedIn:** [saifulislam07](https://linkedin.com/in/saifulislam07)
+- **Location:** Jamshedpur, Jharkhand, India
