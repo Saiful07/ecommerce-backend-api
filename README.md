@@ -60,7 +60,7 @@ Production-ready RESTful e-commerce backend API built with Django REST Framework
 - `DELETE /api/products/{id}/` - Delete product (admin only)
 - `GET /api/products/featured/` - Featured products (latest 10)
 - `GET /api/products/low_stock/` - Low stock alert (admin only)
-- `GET /api/products/analytics/` - Admin analytics dashboard
+- `GET /api/products/analytics/` - Admin analytics dashboard (admin only)
 
 **Query Parameters:**
 - `search` - Search in name/description
@@ -82,7 +82,6 @@ Production-ready RESTful e-commerce backend API built with Django REST Framework
 - `GET /api/orders/{id}/` - Order detail with items
 - `POST /api/orders/{id}/cancel/` - Cancel and restore stock
 - `PATCH /api/orders/{id}/update_status/` - Update status (admin only)
-- `GET /api/orders/sales_report/` - Sales report with date filtering (admin only)
 
 ### Payments (3 endpoints)
 - `POST /api/payments/initiate/` - Initiate Razorpay payment
@@ -91,7 +90,7 @@ Production-ready RESTful e-commerce backend API built with Django REST Framework
 
 ### Admin Analytics (2 endpoints)
 - `GET /api/products/analytics/` - Dashboard (revenue, top products, orders by status)
-- `GET /api/orders/sales_report/?days=30` - Sales breakdown
+- `GET /api/orders/sales_report/?days=30` - Sales breakdown with date filtering
 
 ## 📦 Installation
 
@@ -169,6 +168,47 @@ pytest tests/test_orders.py
 - 15 tests covering authentication, products, orders
 - Critical flows: cart migration, order creation, stock management
 - Payment mocking and race condition testing
+
+## 🚀 Deployment
+
+### Quick Deploy to Railway (Recommended)
+
+1. **Install production dependencies:**
+```bash
+pip install gunicorn dj-database-url psycopg2-binary whitenoise
+pip freeze > requirements.txt
+```
+
+2. **Create `Procfile` in project root:**
+```
+web: gunicorn ecommerce_backend.wsgi --log-file -
+```
+
+3. **Deploy:**
+   - Go to https://railway.app
+   - Sign up with GitHub
+   - New Project → Deploy from GitHub repo
+   - Select this repository
+   - Add PostgreSQL database
+   - Set environment variables: `SECRET_KEY`, `DEBUG=False`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`
+   - Railway auto-deploys
+
+4. **Run migrations:**
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+**Alternative platforms:** Render, PythonAnywhere, Heroku
+
+### Production Settings
+
+Update `ALLOWED_HOSTS` in `settings.py`:
+```python
+ALLOWED_HOSTS = ['your-domain.com', 'your-app.up.railway.app']
+```
+
+**Security:** Always use environment variables for sensitive data in production.
 
 ## 🧪 Quick Test Flow (Postman)
 
@@ -250,7 +290,7 @@ Content-Type: application/json
 
 ## 📝 Development Progress
 
-**Project Completion: 95%**
+**Project Completion: 100%** ✅
 
 Detailed daily progress: [PROGRESS.md](PROGRESS.md)
 
@@ -262,9 +302,7 @@ Detailed daily progress: [PROGRESS.md](PROGRESS.md)
 - ✅ Payment Integration (3 endpoints, 65% tested)
 - ✅ Admin Analytics (2 endpoints, 69% tested)
 - ✅ Testing Suite (15 tests, 67% coverage)
-
-### Remaining
-- ⏳ Deployment documentation
+- ✅ Deployment Ready
 
 ## 🏗️ Project Structure
 ```
@@ -333,8 +371,8 @@ ecommerce-backend-api/
 - **Total Models:** 9
 - **Total Tests:** 15
 - **Test Coverage:** 67%
-- **Total Commits:** 20
-- **Development Time:** 9 days
+- **Total Commits:** 21
+- **Development Time:** 10 days
 - **Lines of Code:** ~1,100 (excluding migrations)
 
 ## 👤 Author
